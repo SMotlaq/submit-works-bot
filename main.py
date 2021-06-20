@@ -68,35 +68,55 @@ def _today(inCome_uid):
     try:
         with conn:
             all_times = db.query_user_times(conn, inCome_uid)
-            print(all_times)
             sum_of_today = 0
             for _time in all_times:
                 stop_time  = _time[1]
                 sum_of_row = _time[2]
-                try:
-                    if mdt.isInToday(stop_time)==1:
-                        print(sum_of_row)
-                        sum_of_today = sum_of_today + int(sum_of_row)
-                except Exception as e:
-                    print(e)
-            print(sum_of_today)
+                if mdt.isInToday(stop_time)==1:
+                    sum_of_today = sum_of_today + int(sum_of_row)
             db.edit_user(conn, inCome_uid, state = 'enter_period')
-        if sum_of_today==0:
+        total_minutes = int((sum_of_today%3600)/60)
+        total_hours   = int(sum_of_today/3600)
+        if sum_of_today<60:
             send_text(inCome_uid, ms.no_today, keyboard = bt.time_domain)
         else:
-            if sum_of_today%60==0:
-                send_text(inCome_uid, ms.today_all_noMinute.replace('%', str(int(sum_of_today/3600))), keyboard = bt.time_domain)
+            if total_hours==0:
+                send_text(inCome_uid, ms.today_all_onlyMinute.replace('%', str(total_minutes)), keyboard = bt.time_domain)
             else:
-                send_text(inCome_uid, ms.today_all_withMinute.replace('%', str(int(sum_of_today/3600))).replace('$', str(int(sum_of_today/60))), keyboard = bt.time_domain)
+                if total_minutes==0:
+                    send_text(inCome_uid, ms.today_all_noMinute.replace('%', str(total_hours)), keyboard = bt.time_domain)
+                else:
+                    send_text(inCome_uid, ms.today_all_withMinute.replace('%', str(total_hours)).replace('$', str(total_minutes)), keyboard = bt.time_domain)
     except Exception as e:
         pritn('error in _today()')
         print(e)
 
-def _this_weak(inCome_uid):
-    pass
-
 def _this_month(inCome_uid):
-    pass
+    try:
+        with conn:
+            all_times = db.query_user_times(conn, inCome_uid)
+            sum_of_this_month = 0
+            for _time in all_times:
+                stop_time  = _time[1]
+                sum_of_row = _time[2]
+                if mdt.isInThisMonth(stop_time)==1:
+                    sum_of_this_month = sum_of_this_month + int(sum_of_row)
+            db.edit_user(conn, inCome_uid, state = 'enter_period')
+        total_minutes = int((sum_of_this_month%3600)/60)
+        total_hours   = int(sum_of_this_month/3600)
+        if sum_of_this_month<60:
+            send_text(inCome_uid, ms.no_this_month, keyboard = bt.time_domain)
+        else:
+            if total_hours==0:
+                send_text(inCome_uid, ms.month_all_onlyMinute.replace('%', str(total_minutes)), keyboard = bt.time_domain)
+            else:
+                if total_minutes==0:
+                    send_text(inCome_uid, ms.month_all_noMinute.replace('%', str(total_hours)), keyboard = bt.time_domain)
+                else:
+                    send_text(inCome_uid, ms.month_all_withMinute.replace('%', str(total_hours)).replace('$', str(total_minutes)), keyboard = bt.time_domain)
+    except Exception as e:
+        pritn('error in _this_month()')
+        print(e)
 
 def _back_to_home(inCome_uid):
     try:
@@ -108,15 +128,13 @@ def _back_to_home(inCome_uid):
         print(e)
 
 FSM_Array = {
-            'home'          : { bt.home[0][0]: _start_timer,
-                                bt.home[1][0]: _cheghadr_shod,
-                                bt.home[1][1]: _empty },
+            'home'          : { bt.home[0][1]: _start_timer,
+                                bt.home[0][0]: _cheghadr_shod },
 
             'working'       : { bt.working[0][0]: _working_done },
 
             'enter_period'  : { bt.time_domain[0][0]: _today,
-                                bt.time_domain[0][1]: _this_weak,
-                                bt.time_domain[0][2]: _this_month,
+                                bt.time_domain[0][1]: _this_month,
                                 bt.time_domain[1][0]: _back_to_home }
             }
 
@@ -229,8 +247,12 @@ send_text(log_chan, 'Bot started')
 #     pass
 
 while True:
-    #clear = lambda: os.system('cls')
-    #clear()
+    clear = lambda: os.system('cls')
+    clear()
 
-    print('\n-- DONE --')
+    print('Submit')
+    time.sleep(3)
+    print('Works')
+    time.sleep(3)
+    print('is UP!')
     time.sleep(3)
