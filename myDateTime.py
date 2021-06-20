@@ -29,13 +29,22 @@ def str2dt(_input):
 
 def isInToday(_input):
     today = str(jdatetime.datetime.now())
-    today_date = get_date(today)
+    today_year  = get_year(today)
+    today_month = get_month(today)
+    today_day   = get_day(today)
 
-    start_of_today = today_date + " 00:00:00.0"
+    input_year  = get_year(_input)
+    input_month = get_month(_input)
+    input_day   = get_day(_input)
 
-    length = (str2dt(_input) - str2dt(start_of_today)).total_seconds()
+    return 1 if (input_year==today_year and input_month==today_month and input_day==today_day) else 0
 
-    if 0 < length and length < 24*3600:
-        return 1
-    else:
-        return 0
+def isInThisMonth(_input):
+    today = str(jdatetime.datetime.now())
+    today_year  = get_year(today)
+    today_month = get_month(today)
+
+    input_year  = get_year(_input)
+    input_month = get_month(_input)
+
+    return 1 if (input_year==today_year and input_month==today_month) else 0
