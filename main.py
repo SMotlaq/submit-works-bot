@@ -39,10 +39,11 @@ def _cheghadr_shod(inCome_uid):
         with conn:
             all_times = db.query_user_times(conn, inCome_uid)
             if all_times==[0]:
+                db.edit_user(conn, inCome_uid, state = 'home')
                 send_text(inCome_uid, ms.no_work_yet, keyboard = bt.home)
             else:
                 db.edit_user(conn, inCome_uid, state = 'enter_period')
-        send_text(inCome_uid, ms.enter_period, keyboard = bt.time_domain)
+                send_text(inCome_uid, ms.enter_period, keyboard = bt.time_domain)
     except Exception as e:
         pritn('error in _cheghadr_shod()')
         print(e)
