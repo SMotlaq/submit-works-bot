@@ -22,6 +22,8 @@ bot        = telegram.Bot(token=my_token)
 updater    = Updater(my_token)
 db.create_table(conn)
 
+#----------------------- FSM FUNCTIONS -----------------------#
+
 def _start_timer(inCome_uid):
     try:
         with conn:
@@ -44,9 +46,6 @@ def _cheghadr_shod(inCome_uid):
     except Exception as e:
         pritn('error in _cheghadr_shod()')
         print(e)
-
-def _empty(inCome_uid):
-    send_text(inCome_uid, "timer started", keyboard = bt.home)
 
 def _working_done(inCome_uid):
     try:
@@ -154,7 +153,7 @@ def FSM_handler(bot, update):
             print(e)
     else:
         reply_markup = telegram.ReplyKeyboardRemove()
-        bot.send_message(chat_id = int(inCome_uid),text = ms.hit_start[language], reply_markup=reply_markup)
+        bot.send_message(chat_id = int(inCome_uid),text = ms.hit_start, reply_markup=reply_markup)
 
 def start(bot, update, args):
     inCome_uid, inCome_name, inCome_user_id = exctract_info(update.message.from_user)
@@ -171,6 +170,7 @@ def start(bot, update, args):
             db.edit_user(conn, inCome_uid, name = inCome_name, user_id = inCome_user_id)
     send_text(int(inCome_uid),ms.start,keyboard=bt.home)
 
+#----------------------- OTHER FUNCTIONS -----------------------#
 
 def exctract_info(chat_id):
     inCome_uid = str(chat_id['id'])
@@ -224,6 +224,8 @@ def keyboard_handler(keyboard_buttons):
 def handler(signum, frame):
     print('idle point')
     updater.idle()
+
+#----------------------- EVENT HANDLERS -----------------------#
 
 signal.signal(signal.SIGINT, handler)
 start_command = CommandHandler('start', start, pass_args=True)
