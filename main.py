@@ -61,7 +61,7 @@ def _working_done(inCome_uid, inCome_name, inCome_user_id):
             db.edit_user(conn, inCome_uid, state = 'home', has_open_time_range = '0')
             db.edit_times_byID(conn, LastTime_RowNumber, inCome_uid, stop_time, str(int(section_length)))
         send_text(inCome_uid, ms.timer_stoped.replace('%', str(int(section_length/60))), keyboard = bt.home)
-        send_text(inCome_uid, ms.end_of_working.replace('%',  '[NO USER ID]' if inCome_user_id=='None' else ('@' + inCome_user_id)).replace('$', str(int(section_length/60))))
+        send_text(log_chan, ms.end_of_working.replace('%',  '[NO USER ID]' if inCome_user_id=='None' else ('@' + inCome_user_id)).replace('$', str(int(section_length/60))))
     except Exception as e:
         pritn('error in _working_done()')
         print(e)
