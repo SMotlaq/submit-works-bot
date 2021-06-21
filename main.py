@@ -24,17 +24,18 @@ db.create_table(conn)
 
 #----------------------- FSM FUNCTIONS -----------------------#
 
-def _start_timer(inCome_uid):
+def _start_timer(inCome_uid, inCome_name, inCome_user_id):
     try:
         with conn:
             NewTime_RowNumber = db.add_times(conn, inCome_uid, start_time = str(jdatetime.datetime.now()))
             db.edit_user(conn, inCome_uid, state = 'working', has_open_time_range = '1', last_time_row = str(NewTime_RowNumber))
         send_text(inCome_uid, ms.timer_started, keyboard = bt.working)
+        send_text(log_chan, ms.new_start.replace('%', '[NO USER ID]' if inCome_user_id=='None' else ('@' + inCome_user_id)))
     except Exception as e:
         pritn('error in _start_timer()')
         print(e)
 
-def _cheghadr_shod(inCome_uid):
+def _cheghadr_shod(inCome_uid, inCome_name, inCome_user_id):
     try:
         with conn:
             all_times = db.query_user_times(conn, inCome_uid)
@@ -48,7 +49,7 @@ def _cheghadr_shod(inCome_uid):
         pritn('error in _cheghadr_shod()')
         print(e)
 
-def _working_done(inCome_uid):
+def _working_done(inCome_uid, inCome_name, inCome_user_id):
     try:
         with conn:
             LastTime_RowNumber = int(db.query_user(conn, inCome_uid)[6]) #last_time_row
@@ -60,11 +61,12 @@ def _working_done(inCome_uid):
             db.edit_user(conn, inCome_uid, state = 'home', has_open_time_range = '0')
             db.edit_times_byID(conn, LastTime_RowNumber, inCome_uid, stop_time, str(int(section_length)))
         send_text(inCome_uid, ms.timer_stoped.replace('%', str(int(section_length/60))), keyboard = bt.home)
+        send_text(inCome_uid, ms.end_of_working.replace('%',  '[NO USER ID]' if inCome_user_id=='None' else ('@' + inCome_user_id)).replace('$', str(int(section_length/60))))
     except Exception as e:
         pritn('error in _working_done()')
         print(e)
 
-def _today(inCome_uid):
+def _today(inCome_uid, inCome_name, inCome_user_id):
     try:
         with conn:
             all_times = db.query_user_times(conn, inCome_uid)
@@ -91,7 +93,7 @@ def _today(inCome_uid):
         pritn('error in _today()')
         print(e)
 
-def _this_month(inCome_uid):
+def _this_month(inCome_uid, inCome_name, inCome_user_id):
     try:
         with conn:
             all_times = db.query_user_times(conn, inCome_uid)
@@ -118,7 +120,7 @@ def _this_month(inCome_uid):
         pritn('error in _this_month()')
         print(e)
 
-def _back_to_home(inCome_uid):
+def _back_to_home(inCome_uid, inCome_name, inCome_user_id):
     try:
         with conn:
             db.edit_user(conn, inCome_uid, state = 'home')
@@ -148,7 +150,7 @@ def FSM_handler(bot, update):
             db.edit_user(conn, inCome_uid, name = inCome_name, user_id = inCome_user_id)
             current_state = db.query_user(conn, inCome_uid)[4]
         try:
-            FSM_Array[current_state][input_message](inCome_uid)
+            FSM_Array[current_state][input_message](inCome_uid, inCome_name, inCome_user_id)
         except Exception as e:
             pritn('error in FSM_handler()')
             print(e)
