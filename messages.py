@@ -28,6 +28,14 @@ month_all_onlyMinute = '✅ مجموع کار این ماه شما % دقیقه 
 
 what_to_do = 'خواستی شروع کنی دکمه‌ی شروع رو بزن'
 hit_start = 'لطفا یکبار روی /start کلیک کنید'
+
+pasho_pasho = '''دو ساعته بی وقفه داری کار میکنی
+پاشو
+پاشو یه دوری بزن
+یه چایی‌ای بخور
+یه دونه بزن پس کله بغل دستیت
+پاشو وقت استراحته 🍩🥤'''
+
 new_member_log = '🙍🏻‍♂️ #New_member 🙍🏻‍♂️'
 new_start = '⏰ % started working'
 end_of_working = '☕ % stoped working. This section: $ minutes'

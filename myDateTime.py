@@ -48,3 +48,8 @@ def isInThisMonth(_input):
     input_month = get_month(_input)
 
     return 1 if (input_year==today_year and input_month==today_month) else 0
+
+def minutes_to_now(_input):
+    today = jdatetime.datetime.now()
+    converted_input = str2dt(_input)
+    return (today - converted_input).total_seconds()/60

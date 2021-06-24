@@ -32,7 +32,7 @@ def _start_timer(inCome_uid, inCome_name, inCome_user_id):
         send_text(inCome_uid, ms.timer_started, keyboard = bt.working)
         send_text(log_chan, ms.new_start.replace('%', '[NO USER ID]' if inCome_user_id=='None' else ('@' + inCome_user_id)))
     except Exception as e:
-        pritn('error in _start_timer()')
+        print('error in _start_timer()')
         print(e)
 
 def _cheghadr_shod(inCome_uid, inCome_name, inCome_user_id):
@@ -46,7 +46,7 @@ def _cheghadr_shod(inCome_uid, inCome_name, inCome_user_id):
                 db.edit_user(conn, inCome_uid, state = 'enter_period')
                 send_text(inCome_uid, ms.enter_period, keyboard = bt.time_domain)
     except Exception as e:
-        pritn('error in _cheghadr_shod()')
+        print('error in _cheghadr_shod()')
         print(e)
 
 def _working_done(inCome_uid, inCome_name, inCome_user_id):
@@ -63,7 +63,7 @@ def _working_done(inCome_uid, inCome_name, inCome_user_id):
         send_text(inCome_uid, ms.timer_stoped.replace('%', str(int(section_length/60))), keyboard = bt.home)
         send_text(log_chan, ms.end_of_working.replace('%',  '[NO USER ID]' if inCome_user_id=='None' else ('@' + inCome_user_id)).replace('$', str(int(section_length/60))))
     except Exception as e:
-        pritn('error in _working_done()')
+        print('error in _working_done()')
         print(e)
 
 def _today(inCome_uid, inCome_name, inCome_user_id):
@@ -90,7 +90,7 @@ def _today(inCome_uid, inCome_name, inCome_user_id):
                 else:
                     send_text(inCome_uid, ms.today_all_withMinute.replace('%', str(total_hours)).replace('$', str(total_minutes)), keyboard = bt.time_domain)
     except Exception as e:
-        pritn('error in _today()')
+        print('error in _today()')
         print(e)
 
 def _this_month(inCome_uid, inCome_name, inCome_user_id):
@@ -117,7 +117,7 @@ def _this_month(inCome_uid, inCome_name, inCome_user_id):
                 else:
                     send_text(inCome_uid, ms.month_all_withMinute.replace('%', str(total_hours)).replace('$', str(total_minutes)), keyboard = bt.time_domain)
     except Exception as e:
-        pritn('error in _this_month()')
+        print('error in _this_month()')
         print(e)
 
 def _back_to_home(inCome_uid, inCome_name, inCome_user_id):
@@ -126,7 +126,7 @@ def _back_to_home(inCome_uid, inCome_name, inCome_user_id):
             db.edit_user(conn, inCome_uid, state = 'home')
         send_text(inCome_uid, ms.what_to_do, keyboard = bt.home)
     except Exception as e:
-        pritn('error in _back_to_home()')
+        print('error in _back_to_home()')
         print(e)
 
 FSM_Array = {
@@ -152,7 +152,7 @@ def FSM_handler(bot, update):
         try:
             FSM_Array[current_state][input_message](inCome_uid, inCome_name, inCome_user_id)
         except Exception as e:
-            pritn('error in FSM_handler()')
+            print('error in FSM_handler()')
             print(e)
     else:
         reply_markup = telegram.ReplyKeyboardRemove()
@@ -205,7 +205,7 @@ def send_text(uid, msg, keyboard=None):
             reply_markup = telegram.ReplyKeyboardMarkup(keyboard,resize_keyboard=True)
             bot.send_message(chat_id=uid, text=msg, reply_markup=reply_markup)
     except Exception as e:
-        pritn('error in sen_text()')
+        print('error in sen_text()')
         print(e)
 def send2all(payam):
     with conn:
@@ -252,12 +252,11 @@ send_text(log_chan, 'Bot started')
 #     pass
 
 while True:
-    clear = lambda: os.system('cls')
-    clear()
-
-    print('Submit')
-    time.sleep(3)
-    print('Works')
-    time.sleep(3)
-    print('is UP!')
-    time.sleep(3)
+    with conn:
+        all_times = db.query_all_times(conn)
+        if all_times!=0:
+            for _time in all_times:
+                print(_time)
+                if mdt.minutes_to_now(_time[2])>2*60 and _time[3]=='0' and _time[4]=='0':
+                    send_text(_time[1], ms.pasho_pasho)
+    time.sleep(60)

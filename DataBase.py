@@ -57,7 +57,7 @@ def add_times(conn, user_uid, start_time, stop_time = '0', sum_of_row = '0'):
         cur.execute(sql, (user_uid, start_time, stop_time, sum_of_row,))
         return cur.lastrowid
     except Error as e:
-        pritn('error in add_times()')
+        print('error in add_times()')
         print(e)
         return -1
 
@@ -117,7 +117,7 @@ def query_time(conn, id):
         else:
             return [0]
     except Error as e:
-        pritn('error in query_time()')
+        print('error in query_time()')
         print(e)
 def edit_times(conn, user_uid, start_time=None, stop_time=None, sum_of_row=None):
     if start_time!=None:
@@ -155,7 +155,7 @@ def edit_user(conn, uid, name=None, user_id=None, state=None, has_open_time_rang
             cur.execute('UPDATE users SET name=? WHERE uid=?', (name, uid,))
             conn.commit()
         except Error as e:
-            pritn('error in edit_user() in name')
+            print('error in edit_user() in name')
             print(e)
     if user_id!=None:
         try:
@@ -163,7 +163,7 @@ def edit_user(conn, uid, name=None, user_id=None, state=None, has_open_time_rang
             cur.execute('UPDATE users SET user_id=? WHERE uid=?', (user_id, uid,))
             conn.commit()
         except Error as e:
-            pritn('error in edit_user() in user_id')
+            print('error in edit_user() in user_id')
             print(e)
     if state!=None:
         try:
@@ -171,7 +171,7 @@ def edit_user(conn, uid, name=None, user_id=None, state=None, has_open_time_rang
             cur.execute('UPDATE users SET state=? WHERE uid=?', (state, uid,))
             conn.commit()
         except Error as e:
-            pritn('error in edit_user() in state')
+            print('error in edit_user() in state')
             print(e)
     if has_open_time_range!=None:
         try:
@@ -179,7 +179,7 @@ def edit_user(conn, uid, name=None, user_id=None, state=None, has_open_time_rang
             cur.execute('UPDATE users SET has_open_time_range=? WHERE uid=?', (has_open_time_range, uid,))
             conn.commit()
         except Error as e:
-            pritn('error in edit_user() in has_open_time_range')
+            print('error in edit_user() in has_open_time_range')
             print(e)
     if last_time_row!=None:
         try:
@@ -187,5 +187,5 @@ def edit_user(conn, uid, name=None, user_id=None, state=None, has_open_time_rang
             cur.execute('UPDATE users SET last_time_row=? WHERE uid=?', (last_time_row, uid,))
             conn.commit()
         except Error as e:
-            pritn('error in edit_user() in last_time_row')
+            print('error in edit_user() in last_time_row')
             print(e)
