@@ -257,6 +257,6 @@ while True:
         if all_times!=0:
             for _time in all_times:
                 print(_time)
-                if mdt.minutes_to_now(_time[2])>2*60 and _time[3]=='0' and _time[4]=='0':
+                if (5 < mdt.minutes_to_now(_time[2])) and (mdt.minutes_to_now(_time[2]) % (2*60) <= 1) and (_time[3]=='0') and (_time[4]=='0'):
                     send_text(_time[1], ms.pasho_pasho)
     time.sleep(60)
