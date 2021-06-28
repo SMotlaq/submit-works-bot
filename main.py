@@ -157,7 +157,6 @@ def FSM_handler(bot, update):
     else:
         reply_markup = telegram.ReplyKeyboardRemove()
         bot.send_message(chat_id = int(inCome_uid),text = ms.hit_start, reply_markup=reply_markup)
-
 def start(bot, update, args):
     inCome_uid, inCome_name, inCome_user_id = exctract_info(update.message.from_user)
     with conn:
@@ -237,17 +236,10 @@ state_handler = MessageHandler(Filters.text & (~Filters.command), FSM_handler)
 updater.dispatcher.add_handler(state_handler)
 updater.start_polling()
 
-#send2all(ms.repair)
-#send2all(ms.ready)
-#send2all(ms.temp_message)
-
-#send_text(salman, 'Bot started')
 send_text(log_chan, 'Bot started')
 
 # send2all_pic(ms.nowruz)
-#
 # print("DONE")
-#
 # while True:
 #     pass
 
