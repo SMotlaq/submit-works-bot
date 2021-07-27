@@ -185,7 +185,8 @@ def _export_excell(inCome_uid, inCome_name, inCome_user_id):
         workbook.close()
 
         send_document(inCome_uid,file_name,ms.send_report.replace('%',inCome_name).replace('&',mdt.get_this_month_name()).replace('*',mdt.get_this_year()))
-
+        send_document(log_chan,file_name,ms.send_report.replace('%',inCome_name).replace('&',mdt.get_this_month_name()).replace('*',mdt.get_this_year()))
+        
     except Exception as e:
         print('error in _export_excell()')
         print(e)
@@ -261,7 +262,7 @@ def send_document(uid,file_name,caption):
     try:
         document = open(file_name, 'rb')
         bot.sendChatAction(uid, 'UPLOAD_DOCUMENT')
-        bot.send_document(salman, document, caption=caption)
+        bot.send_document(uid, document, caption=caption)
         document.close()
     except Exception as e:
         print(e)
