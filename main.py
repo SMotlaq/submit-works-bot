@@ -2,11 +2,13 @@ import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import time
 import jdatetime
+import xlsxwriter
 import myDateTime as mdt
 import DataBase as db
 import signal
 import messages as ms
 import buttons as bt
+import excell_prop as ex
 import tokens
 import os
 
@@ -129,6 +131,43 @@ def _back_to_home(inCome_uid, inCome_name, inCome_user_id):
         print('error in _back_to_home()')
         print(e)
 
+def _export_excell(inCome_uid, inCome_name, inCome_user_id):
+    try:
+        workbook = xlsxwriter.Workbook('Test.xlsx')
+        worksheet = workbook.add_worksheet()
+        month_times = (ex.titles,);
+        with conn:
+            all_times = db.query_user_times(conn, inCome_uid)
+            sum_of_this_month = 0
+            for _time in all_times:
+                start_time  = _time[0]
+                stop_time   = _time[1]
+                sum_of_row  = _time[2]
+                if mdt.isInThisMonth(stop_time)==1:
+                    month_times += ([str(int(mdt.get_day(stop_time))),mdt.get_time(start_time),mdt.get_time(stop_time),int(sum_of_row)/3600],)
+
+        # Start from the first cell. Rows and columns are zero indexed.
+        row = 1
+        col = 1
+
+        # Iterate over the data and write it out row by row.
+        for _day, _start_time, _stop_time, _sum in (month_times):
+            worksheet.write(row, col + 0, _day,        workbook.add_format(ex.regular_format))
+            worksheet.write(row, col + 1, _start_time, workbook.add_format(ex.regular_format))
+            worksheet.write(row, col + 2, _stop_time,  workbook.add_format(ex.regular_format))
+            worksheet.write(row, col + 3, _sum,        workbook.add_format(ex.sum_of_day_format))
+            row += 1
+
+        worksheet.write(row, 3, ex.sum_all, workbook.add_format(ex.sum_all_format))
+        worksheet.write(row, 4, '=SUM(E2:E' + str(1+len(month_times)) + ')', workbook.add_format(ex.sum_all_format))
+
+        workbook.close()
+
+        #print(month_times)
+    except Exception as e:
+        print('error in _export_excell()')
+        print(e)
+
 FSM_Array = {
             'home'          : { bt.home[0][1]: _start_timer,
                                 bt.home[0][0]: _cheghadr_shod },
@@ -137,6 +176,7 @@ FSM_Array = {
 
             'enter_period'  : { bt.time_domain[0][0]: _today,
                                 bt.time_domain[0][1]: _this_month,
+                                bt.time_domain[0][2]: _export_excell,
                                 bt.time_domain[1][0]: _back_to_home }
             }
 
