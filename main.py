@@ -16,6 +16,7 @@ my_token = tokens.my_token
 
 myPath     = os.getcwd()
 database   = os.path.join(myPath, "DB.db")
+report     = os.path.join(myPath, "reports")
 conn       = db.create_connection(database)
 
 log_chan   = -1001391934746
@@ -144,7 +145,8 @@ def _export_excell(inCome_uid, inCome_name, inCome_user_id):
                 if mdt.isInThisMonth(stop_time)==1:
                     month_times += ([str(int(mdt.get_day(stop_time))),mdt.get_time(start_time),mdt.get_time(stop_time),int(sum_of_row)/3600],)
 
-        workbook = xlsxwriter.Workbook(mdt.get_this_year() + '-' + mdt.get_this_month() + '__' + inCome_uid + '.xlsx')
+        file_name = os.path.join(report, mdt.get_this_year() + '-' + mdt.get_this_month() + '__' + inCome_uid + ".xlsx")
+        workbook = xlsxwriter.Workbook(file_name)
         worksheet = workbook.add_worksheet()
 
         #worksheet.write(1, 1, ex.header, workbook.add_format(ex.header_format))
@@ -182,7 +184,8 @@ def _export_excell(inCome_uid, inCome_name, inCome_user_id):
 
         workbook.close()
 
-        #print(month_times)
+        send_document(inCome_uid,file_name,ms.send_report.replace('%',inCome_name).replace('&',mdt.get_this_month_name()).replace('*',mdt.get_this_year()))
+
     except Exception as e:
         print('error in _export_excell()')
         print(e)
@@ -252,6 +255,14 @@ def send_photo(uid,msg,adrs):
     try:
         bot.sendChatAction(uid, 'UPLOAD_PHOTO')
         bot.sendPhoto(chat_id=uid, photo=open(adrs, 'rb'), caption=msg)
+    except Exception as e:
+        print(e)
+def send_document(uid,file_name,caption):
+    try:
+        document = open(file_name, 'rb')
+        bot.sendChatAction(uid, 'UPLOAD_DOCUMENT')
+        bot.send_document(salman, document, caption=caption)
+        document.close()
     except Exception as e:
         print(e)
 def send_text(uid, msg, keyboard=None):
