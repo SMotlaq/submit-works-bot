@@ -1,15 +1,15 @@
 import jdatetime
 
 names = {
-    '1'  : 'فروردین',
-    '2'  : 'اردیبهشت',
-    '3'  : 'خرداد',
-    '4'  : 'تیر',
-    '5'  : 'مرداد',
-    '6'  : 'شهریور',
-    '7'  : 'مهر',
-    '8'  : 'آبان',
-    '9'  : 'آذر',
+    '01' : 'فروردین',
+    '02' : 'اردیبهشت',
+    '03' : 'خرداد',
+    '04' : 'تیر',
+    '05' : 'مرداد',
+    '06' : 'شهریور',
+    '07' : 'مهر',
+    '08' : 'آبان',
+    '09' : 'آذر',
     '10' : 'دی',
     '11' : 'بهمن',
     '12' : 'اسفند'
@@ -38,6 +38,15 @@ def get_date(_input):
 
 def get_time(_input):
     return _input.split(' ')[1].split('.')[0]
+
+def get_this_year():
+    return get_year(str(jdatetime.datetime.now()))
+
+def get_this_month():
+    return get_month(str(jdatetime.datetime.now()))
+
+def get_this_month_name():
+    return names[get_month(str(jdatetime.datetime.now()))]
 
 def str2dt(_input):
     return jdatetime.datetime.strptime(_input.split('.')[0], "%Y-%m-%d %H:%M:%S")
