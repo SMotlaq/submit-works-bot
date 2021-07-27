@@ -133,8 +133,6 @@ def _back_to_home(inCome_uid, inCome_name, inCome_user_id):
 
 def _export_excell(inCome_uid, inCome_name, inCome_user_id):
     try:
-        workbook = xlsxwriter.Workbook('Test.xlsx')
-        worksheet = workbook.add_worksheet()
         month_times = (ex.titles,);
         with conn:
             all_times = db.query_user_times(conn, inCome_uid)
@@ -146,8 +144,14 @@ def _export_excell(inCome_uid, inCome_name, inCome_user_id):
                 if mdt.isInThisMonth(stop_time)==1:
                     month_times += ([str(int(mdt.get_day(stop_time))),mdt.get_time(start_time),mdt.get_time(stop_time),int(sum_of_row)/3600],)
 
+        workbook = xlsxwriter.Workbook(mdt.get_this_year() + '-' + mdt.get_this_month() + '__' + inCome_uid + '.xlsx')
+        worksheet = workbook.add_worksheet()
+
+        #worksheet.write(1, 1, ex.header, workbook.add_format(ex.header_format))
+        worksheet.merge_range(1, 1, 1, 4, ex.header.replace('%',mdt.get_this_month_name()).replace('&',mdt.get_this_year()), workbook.add_format(ex.header_format))
+
         # Start from the first cell. Rows and columns are zero indexed.
-        row = 1
+        row = 2
         col = 1
 
         # Iterate over the data and write it out row by row.
@@ -158,8 +162,23 @@ def _export_excell(inCome_uid, inCome_name, inCome_user_id):
             worksheet.write(row, col + 3, _sum,        workbook.add_format(ex.sum_of_day_format))
             row += 1
 
+        # Merging duplicate cells.
+        start_row = 0
+        stop_row = 1
+        month_times += (['','','',''],)
+        prev_day = ''
+
+        for i in range(1,len(month_times)):
+            if prev_day!=month_times[i][0]:
+                stop_row = i
+                if start_row!=(stop_row-1):
+                    worksheet.merge_range(start_row+2, 1, stop_row+1, 1, prev_day, workbook.add_format(ex.regular_format))
+                start_row = i
+            prev_day = month_times[i][0]
+
+        # Write the sum of month
         worksheet.write(row, 3, ex.sum_all, workbook.add_format(ex.sum_all_format))
-        worksheet.write(row, 4, '=SUM(E2:E' + str(1+len(month_times)) + ')', workbook.add_format(ex.sum_all_format))
+        worksheet.write(row, 4, '=SUM(E3:E' + str(len(month_times)+1) + ')', workbook.add_format(ex.sum_all_format))
 
         workbook.close()
 
