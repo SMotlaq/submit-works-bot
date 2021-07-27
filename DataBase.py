@@ -119,6 +119,7 @@ def query_time(conn, id):
     except Error as e:
         print('error in query_time()')
         print(e)
+
 def edit_times(conn, user_uid, start_time=None, stop_time=None, sum_of_row=None):
     if start_time!=None:
         try:
