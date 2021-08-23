@@ -73,6 +73,14 @@ def isInThisMonth(_input):
 
     return 1 if (input_year==today_year and input_month==today_month) else 0
 
+def isInPrevMonth(_input):
+    first_day_of_current_month = jdatetime.date.today().replace(day=1)
+    last_day_of_previous_month = first_day_of_current_month - jdatetime.timedelta(days=1)
+
+    input_year  = get_year(_input)
+    input_month = get_month(_input)
+    return 1 if (int(input_year)==last_day_of_previous_month.year and int(input_month)==last_day_of_previous_month.month) else 0
+
 def minutes_to_now(_input):
     today = jdatetime.datetime.now()
     converted_input = str2dt(_input)
