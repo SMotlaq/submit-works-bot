@@ -132,7 +132,31 @@ def _back_to_home(inCome_uid, inCome_name, inCome_user_id):
         print('error in _back_to_home()')
         print(e)
 
-def _export_excell(inCome_uid, inCome_name, inCome_user_id):
+def _back_to_enter_period(inCome_uid, inCome_name, inCome_user_id):
+    try:
+        with conn:
+            db.edit_user(conn, inCome_uid, state = 'enter_period')
+        send_text(inCome_uid, ms.enter_period, keyboard = bt.time_domain)
+    except Exception as e:
+        print('error in _back_to_enter_period()')
+        print(e)
+
+def _enter_month(inCome_uid, inCome_name, inCome_user_id):
+    try:
+        with conn:
+            db.edit_user(conn, inCome_uid, state = 'enter_month')
+        send_text(inCome_uid, ms.which_month, keyboard = bt.monthes)
+    except Exception as e:
+        print('error in _enter_month()')
+        print(e)
+
+def _export_selector_prev(inCome_uid, inCome_name, inCome_user_id):
+    __export_excell(inCome_uid, inCome_name, inCome_user_id, previous=True)
+
+def _export_selector_now(inCome_uid, inCome_name, inCome_user_id):
+    __export_excell(inCome_uid, inCome_name, inCome_user_id, previous=False)
+
+def __export_excell(inCome_uid, inCome_name, inCome_user_id, previous=False):
     try:
         month_times = (ex.titles,);
         with conn:
@@ -142,15 +166,30 @@ def _export_excell(inCome_uid, inCome_name, inCome_user_id):
                 start_time  = _time[0]
                 stop_time   = _time[1]
                 sum_of_row  = _time[2]
-                if mdt.isInThisMonth(stop_time)==1:
-                    month_times += ([str(int(mdt.get_day(stop_time))),mdt.get_time(start_time),mdt.get_time(stop_time),int(sum_of_row)/3600],)
+                if previous==False:
+                    if mdt.isInThisMonth(stop_time)==1:
+                        month_times += ([str(int(mdt.get_day(stop_time))),mdt.get_time(start_time),mdt.get_time(stop_time),int(sum_of_row)/3600],)
+                else:
+                    if mdt.isInPrevMonth(stop_time)==1:
+                        month_times += ([str(int(mdt.get_day(stop_time))),mdt.get_time(start_time),mdt.get_time(stop_time),int(sum_of_row)/3600],)
 
-        file_name = os.path.join(report, mdt.get_this_year() + '-' + mdt.get_this_month() + '__' + inCome_uid + ".xlsx")
+        THIS_YEAR  = mdt.get_this_year()
+        THIS_MONTH = mdt.get_this_month()
+        if previous==True:
+            if THIS_MONTH=='01':
+                THIS_MONTH = '12'
+                THIS_YEAR = str(int(THIS_YEAR)-1)
+            else:
+                THIS_MONTH = int(THIS_MONTH)-1
+                THIS_MONTH = "%02d"%THIS_MONTH
+        THIS_MONTH_NAME = mdt.names[THIS_MONTH]
+
+        file_name = os.path.join(report, THIS_YEAR + '-' + THIS_MONTH + '__' + inCome_uid + ".xlsx")
         workbook = xlsxwriter.Workbook(file_name)
         worksheet = workbook.add_worksheet()
 
         #worksheet.write(1, 1, ex.header, workbook.add_format(ex.header_format))
-        worksheet.merge_range(1, 1, 1, 4, ex.header.replace('%',mdt.get_this_month_name()).replace('&',mdt.get_this_year()), workbook.add_format(ex.header_format))
+        worksheet.merge_range(1, 1, 1, 4, ex.header.replace('%',THIS_MONTH_NAME).replace('&',THIS_YEAR), workbook.add_format(ex.header_format))
 
         # Start from the first cell. Rows and columns are zero indexed.
         row = 2
@@ -184,9 +223,9 @@ def _export_excell(inCome_uid, inCome_name, inCome_user_id):
 
         workbook.close()
 
-        send_document(inCome_uid,file_name,ms.send_report.replace('%',inCome_name).replace('&',mdt.get_this_month_name()).replace('*',mdt.get_this_year()))
-        send_document(log_chan,file_name,ms.send_report.replace('%',inCome_name).replace('&',mdt.get_this_month_name()).replace('*',mdt.get_this_year()))
-        
+        send_document(inCome_uid,file_name,ms.send_report.replace('%',inCome_name).replace('&',THIS_MONTH_NAME).replace('*',THIS_YEAR))
+        send_document(log_chan,file_name,ms.send_report.replace('%',inCome_name).replace('&',THIS_MONTH_NAME).replace('*',THIS_YEAR))
+
     except Exception as e:
         print('error in _export_excell()')
         print(e)
@@ -199,8 +238,12 @@ FSM_Array = {
 
             'enter_period'  : { bt.time_domain[0][0]: _today,
                                 bt.time_domain[0][1]: _this_month,
-                                bt.time_domain[0][2]: _export_excell,
-                                bt.time_domain[1][0]: _back_to_home }
+                                bt.time_domain[0][2]: _enter_month,
+                                bt.time_domain[1][0]: _back_to_home },
+
+            'enter_month'   :{  bt.monthes[0][0]: _export_selector_prev,
+                                bt.monthes[0][1]: _export_selector_now,
+                                bt.monthes[1][0]: _back_to_enter_period,}
             }
 
 def FSM_handler(bot, update):
@@ -320,5 +363,6 @@ while True:
         if all_times!=0:
             for _time in all_times:
                 if (5 < mdt.minutes_to_now(_time[2])) and (mdt.minutes_to_now(_time[2]) % (2*60) <= 1) and (_time[3]=='0') and (_time[4]=='0'):
-                    send_text(_time[1], ms.pasho_pasho)
+                    if int(_time[1])!=117771663:
+                        send_text(_time[1], ms.pasho_pasho)
     time.sleep(60)
