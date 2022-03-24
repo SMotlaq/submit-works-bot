@@ -6,3 +6,5 @@ services:
         build: .
         volumes:
         - ./app:/app
+        environment:
+        - TZ=Iran
