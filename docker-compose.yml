@@ -7,4 +7,4 @@ services:
         volumes:
         - ./app:/app
         environment:
-        - TZ=Iran
+        - TZ=GMT-3:30
