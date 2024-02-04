@@ -21,6 +21,7 @@ conn       = db.create_connection(database)
 
 log_chan   = -1001391934746
 salman     = 95374546
+milad      = 675104932
 bot        = telegram.Bot(token=my_token)
 updater    = Updater(my_token)
 db.create_table(conn)
@@ -34,6 +35,8 @@ def _start_timer(inCome_uid, inCome_name, inCome_user_id):
             db.edit_user(conn, inCome_uid, state = 'working', has_open_time_range = '1', last_time_row = str(NewTime_RowNumber))
         send_text(inCome_uid, ms.timer_started, keyboard = bt.working)
         send_text(log_chan, ms.new_start.replace('%', '[NO USER ID]' if inCome_user_id=='None' else ('@' + inCome_user_id)))
+        if inCome_uid==salman:
+            send_text(milad, ms.oomadam)
     except Exception as e:
         print('error in _start_timer()')
         print(e)
@@ -65,6 +68,8 @@ def _working_done(inCome_uid, inCome_name, inCome_user_id):
             db.edit_times_byID(conn, LastTime_RowNumber, inCome_uid, stop_time, str(int(section_length)))
         send_text(inCome_uid, ms.timer_stoped.replace('%', str(int(section_length/60))), keyboard = bt.home)
         send_text(log_chan, ms.end_of_working.replace('%',  '[NO USER ID]' if inCome_user_id=='None' else ('@' + inCome_user_id)).replace('$', str(int(section_length/60))))
+        if inCome_uid==salman:
+            send_text(milad, ms.raftam)
     except Exception as e:
         print('error in _working_done()')
         print(e)

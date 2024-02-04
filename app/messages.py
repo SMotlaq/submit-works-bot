@@ -47,3 +47,5 @@ send_report = "📊 ریز گزارش % برای & ماه *"
 new_member_log = '🙍🏻‍♂️ #New_member 🙍🏻‍♂️'
 new_start = '⏰ % started working'
 end_of_working = '☕ % stoped working. This section: $ minutes'
+oomadam = 'آمدم'
+raftam = 'رفتم'
