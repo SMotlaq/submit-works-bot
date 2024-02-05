@@ -37,6 +37,7 @@ def _start_timer(inCome_uid, inCome_name, inCome_user_id):
         send_text(log_chan, ms.new_start.replace('%', '[NO USER ID]' if inCome_user_id=='None' else ('@' + inCome_user_id)))
         if inCome_uid==salman:
             send_text(milad, ms.oomadam)
+            send_text(salman, ms.raftam)
     except Exception as e:
         print('error in _start_timer()')
         print(e)
@@ -70,6 +71,7 @@ def _working_done(inCome_uid, inCome_name, inCome_user_id):
         send_text(log_chan, ms.end_of_working.replace('%',  '[NO USER ID]' if inCome_user_id=='None' else ('@' + inCome_user_id)).replace('$', str(int(section_length/60))))
         if inCome_uid==salman:
             send_text(milad, ms.raftam)
+            send_text(salman, ms.raftam)
     except Exception as e:
         print('error in _working_done()')
         print(e)
